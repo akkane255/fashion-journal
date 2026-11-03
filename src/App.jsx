@@ -38,8 +38,8 @@ const Fld=({label,hint,children})=>(
     {children}
   </div>
 );
-const Inp=({value,onChange,placeholder,multi})=>{
-  const s={width:"100%",padding:"9px 11px",border:`1px solid ${C.border}`,borderRadius:"8px",fontFamily:"inherit",fontSize:"13px",color:C.text,background:C.bg,outline:"none",boxSizing:"border-box",resize:multi?"vertical":"none",minHeight:multi?"66px":undefined,lineHeight:"1.6"};
+const Inp=({value,onChange,placeholder,multi,style={}})=>{
+  const s={width:"100%",padding:"9px 11px",border:`1px solid ${C.border}`,borderRadius:"8px",fontFamily:"inherit",fontSize:"13px",color:C.text,background:C.bg,outline:"none",boxSizing:"border-box",resize:multi?"vertical":"none",minHeight:multi?"66px":undefined,lineHeight:"1.6",...style};
   return multi?<textarea value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s}/>:<input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={s}/>;
 };
 const Tog=({label,value,onChange,accent=C.gold})=>(
@@ -541,7 +541,7 @@ function UploadBtn({ onFile, label="上傳圖片", loading=false }){
 }
 
 // 我的話術
-function MyPhrasesTab({records}){
+function MyPhrasesImageTab({records}){
   const [manual,setManual]=useState([]);
   const [newText,setNewText]=useState("");
   const [editId,setEditId]=useState(null);
@@ -669,7 +669,7 @@ function MyPhrasesTab({records}){
 }
 
 // 日文單詞
-function JpWordsTab(){
+function JpWordsImageTab(){
   const [words,setWords]=useState([]);
   const [loading,setLoading]=useState(false);
   const [search,setSearch]=useState("");
@@ -742,7 +742,7 @@ function JpWordsTab(){
 }
 
 // 材質資料
-function MaterialsTab(){
+function MaterialsImageTab(){
   const [items,setItems]=useState([]);
   const [loading,setLoading]=useState(false);
 
@@ -795,7 +795,7 @@ function MaterialsTab(){
 }
 
 // 穿搭話術
-function StylingTab(){
+function StylingImageTab(){
   const [items,setItems]=useState([]);
   const [loading,setLoading]=useState(false);
 
@@ -878,15 +878,8 @@ function PhrasesBank({records}){
   );
 }
 
-async function callAI(prompt){
-  const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
-  const data=await res.json();
-  if(data.error)throw new Error(data.error.message);
-  return data.content?.find(b=>b.type==="text")?.text||"";
-}
-
 // 我的話術
-function MyPhrasesTab({records}){
+function MyPhrasesTextTab({records}){
   const [manual,setManual]=useState([]);
   const [newText,setNewText]=useState("");
   const [editId,setEditId]=useState(null);
@@ -998,7 +991,7 @@ function MyPhrasesTab({records}){
 }
 
 // 日文單詞
-function JpWordsTab(){
+function JpWordsTextTab(){
   const [words,setWords]=useState([]);
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
@@ -1077,7 +1070,7 @@ function JpWordsTab(){
 }
 
 // 材質資料
-function MaterialsTab(){
+function MaterialsTextTab(){
   const [items,setItems]=useState([]);
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
@@ -1135,7 +1128,7 @@ function MaterialsTab(){
 }
 
 // 穿搭話術
-function StylingTab(){
+function StylingTextTab(){
   const [items,setItems]=useState([]);
   const [input,setInput]=useState("");
   const [loading,setLoading]=useState(false);
@@ -1202,7 +1195,7 @@ function StylingTab(){
   );
 }
 
-function PhrasesBank({records}){
+function PhrasesBankTextVersion({records}){
   const [sub,setSub]=useState("my");
   const SUBS=[["my","💬 我的話術",C.gold],["jp","🈳 日文單詞",navy],["mat","🧵 材質資料",sage],["style","👗 穿搭話術",rose]];
   return(
@@ -1219,6 +1212,31 @@ function PhrasesBank({records}){
       {sub==="style"&&<StylingTab/>}
     </div>
   );
+}
+
+// Each phrase-bank category keeps both input methods available.
+function ModeTabs({mode,onChange}){
+  return <div style={{display:"flex",gap:"6px",marginBottom:"10px"}}>
+    {[ ["image","圖片分析"], ["text","文字整理"] ].map(([value,label])=>(
+      <button key={value} onClick={()=>onChange(value)} style={{flex:1,padding:"7px",border:`1px solid ${mode===value?C.gold:C.border}`,background:mode===value?C.goldLight:"transparent",color:mode===value?C.dark:C.sub,borderRadius:"8px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit"}}>{label}</button>
+    ))}
+  </div>;
+}
+function MyPhrasesTab({records}){
+  const [mode,setMode]=useState("image");
+  return <div><ModeTabs mode={mode} onChange={setMode}/>{mode==="image"?<MyPhrasesImageTab records={records}/>:<MyPhrasesTextTab records={records}/>}</div>;
+}
+function JpWordsTab(){
+  const [mode,setMode]=useState("image");
+  return <div><ModeTabs mode={mode} onChange={setMode}/>{mode==="image"?<JpWordsImageTab/>:<JpWordsTextTab/>}</div>;
+}
+function MaterialsTab(){
+  const [mode,setMode]=useState("image");
+  return <div><ModeTabs mode={mode} onChange={setMode}/>{mode==="image"?<MaterialsImageTab/>:<MaterialsTextTab/>}</div>;
+}
+function StylingTab(){
+  const [mode,setMode]=useState("image");
+  return <div><ModeTabs mode={mode} onChange={setMode}/>{mode==="image"?<StylingImageTab/>:<StylingTextTab/>}</div>;
 }
 
 // ── STATS ─────────────────────────────────────────────────────────────────────
