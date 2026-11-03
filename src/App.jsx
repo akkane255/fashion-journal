@@ -29,8 +29,9 @@ const Tag=({label,active,onClick,color})=>(
   <button onClick={onClick} style={{padding:"5px 12px",border:`1.5px solid ${active?(color||C.dark):C.border}`,background:active?(color||C.dark):"transparent",color:active?"#fff":C.sub,borderRadius:"20px",fontSize:"12px",cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",transition:"all .15s"}}>{label}</button>
 );
 const TagGroup=({options,value,onChange,multi,color})=>{
-  const toggle=o=>multi?onChange(value.includes(o)?value.filter(v=>v!==o):[...value,o]):onChange(value===o?"":o);
-  return <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>{options.map(o=><Tag key={o} label={o} active={multi?value.includes(o):value===o} onClick={()=>toggle(o)} color={color}/>)}</div>;
+  const selected=Array.isArray(value)?value:(value?[value]:[]);
+  const toggle=o=>multi?onChange(selected.includes(o)?selected.filter(v=>v!==o):[...selected,o]):onChange(value===o?"":o);
+  return <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>{options.map(o=><Tag key={o} label={o} active={multi?selected.includes(o):value===o} onClick={()=>toggle(o)} color={color}/>)}</div>;
 };
 const Fld=({label,hint,children})=>(
   <div style={{marginBottom:"13px"}}>
@@ -337,7 +338,7 @@ function TodaySummary({todayRecs}){
         {success.map((r,i)=>(
           <div key={i} style={{background:"#f0f8f2",borderRadius:"8px",padding:"9px 11px",marginBottom:"6px"}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}><span style={{fontSize:"11px",color:C.sub}}>{r.period} · {r.language}</span><span style={{fontSize:"12px",fontWeight:600,color:C.gold}}>{numFmt(r.amount)}</span></div>
-            {r.buy_reason&&<div style={{fontSize:"11px",color:C.success,marginBottom:"2px"}}>原因：{r.buy_reason}</div>}
+            {r.buy_reason&&(Array.isArray(r.buy_reason)?r.buy_reason.length>0:true)&&<div style={{fontSize:"11px",color:C.success,marginBottom:"2px"}}>原因：{Array.isArray(r.buy_reason)?r.buy_reason.join("、"):r.buy_reason}</div>}
             {r.key_sentence&&<div style={{fontSize:"12px",color:C.text,fontStyle:"italic",lineHeight:"1.5"}}>「{r.key_sentence}」</div>}
             {r.item_count>1&&<div style={{fontSize:"10px",color:C.purple,marginTop:"3px"}}>連帶 {r.item_count} 件 🛍</div>}
           </div>
@@ -348,7 +349,7 @@ function TodaySummary({todayRecs}){
         {fail.map((r,i)=>(
           <div key={i} style={{background:"#fdf0ee",borderRadius:"8px",padding:"9px 11px",marginBottom:"6px"}}>
             <div style={{fontSize:"11px",color:C.sub,marginBottom:"3px"}}>{r.period} · {r.customer_type}型 · {r.language}</div>
-            {r.no_buy_reason&&<div style={{fontSize:"11px",color:C.fail,marginBottom:"2px"}}>原因：{r.no_buy_reason}</div>}
+            {r.no_buy_reason&&(Array.isArray(r.no_buy_reason)?r.no_buy_reason.length>0:true)&&<div style={{fontSize:"11px",color:C.fail,marginBottom:"2px"}}>原因：{Array.isArray(r.no_buy_reason)?r.no_buy_reason.join("、"):r.no_buy_reason}</div>}
             {r.redo&&<div style={{fontSize:"12px",color:C.text,lineHeight:"1.5"}}>重來：{r.redo}</div>}
           </div>
         ))}
@@ -428,10 +429,13 @@ function WardrobeDB({records}){
 }
 
 // ── RECORD FORM ───────────────────────────────────────────────────────────────
-const emptyRec=(profile={})=>({id:Date.now(),date:TODAY,period:"",weather:profile.weather?({"晴":"☀️ 晴","陰天":"⛅ 多雲","下雨":"🌧️ 雨"}[profile.weather]||""):"",temp:profile.lowTemp!==""&&profile.highTemp!==""?`${profile.lowTemp}°C～${profile.highTemp}°C`:"",flow:"",self_state:({"還好":"😐 普通","很累":"😴 疲憊","有幹勁":"✨ 飽滿"}[profile.status]||""),sell_desire:"",gender:"",age:"",language:"",style:[],customer_type:"",mood:"",companion:"",opening_line:"",built_rapport:false,items:[{name:"",price:""}],products:"",reasons:[],outfit_complete:false,reaction:"",tryon:"",result:"",amount:"",buy_reason:"",key_sentence:"",no_buy_reason:"",redo:"",memo:""});
+const emptyRec=(profile={})=>({id:Date.now(),date:TODAY,period:"",weather:profile.weather?({"晴":"☀️ 晴","陰天":"⛅ 多雲","下雨":"🌧️ 雨"}[profile.weather]||""):"",temp:profile.lowTemp!==""&&profile.highTemp!==""?`${profile.lowTemp}°C～${profile.highTemp}°C`:"",flow:"",self_state:({"還好":"😐 普通","很累":"😴 疲憊","有幹勁":"✨ 飽滿"}[profile.status]||""),sell_desire:"",gender:"",age:"",language:"",style:[],customer_type:"",mood:"",companion:"",opening_line:"",built_rapport:false,items:[{name:"",price:""}],products:"",reasons:[],outfit_complete:false,reaction:"",tryon:"",result:"",amount:"",buy_reason:[],key_sentence:"",no_buy_reason:[],redo:"",memo:"",first_approach:"",first_reaction:"",second_approach:"",second_approach_line:"",second_reaction:"",followup_approach:"",followup_reaction:""});
 
 function RecordForm({initial,onSave,onCancel,records,dailyProfile}){
-  const [r,setR]=useState(()=>initial||emptyRec(dailyProfile));
+  const [r,setR]=useState(()=>{
+    const base=initial||emptyRec(dailyProfile);
+    return {...base,buy_reason:Array.isArray(base.buy_reason)?base.buy_reason:(base.buy_reason?[base.buy_reason]:[]),no_buy_reason:Array.isArray(base.no_buy_reason)?base.no_buy_reason:(base.no_buy_reason?[base.no_buy_reason]:[])};
+  });
   const set=k=>v=>setR(p=>({...p,[k]:v}));
   const setItem=(i,k,v)=>setR(p=>{const items=[...p.items];items[i]={...items[i],[k]:v};return{...p,items};});
   const addItem=()=>setR(p=>({...p,items:[...p.items,{name:"",price:""}]}));
@@ -471,8 +475,25 @@ function RecordForm({initial,onSave,onCancel,records,dailyProfile}){
         <Fld label="情緒"><TagGroup options={["開放","冷淡","防備","有壓力"]} value={r.mood} onChange={set("mood")}/></Fld>
         {r.customer_type&&hintPhrase&&<div style={{background:"#fdf8ec",border:`1px solid ${C.goldLight}`,borderRadius:"8px",padding:"9px 11px",marginTop:"4px"}}><div style={{fontSize:"9px",color:C.gold,letterSpacing:"0.1em",marginBottom:"4px"}}>上次同類型客人成交話術</div><div style={{fontSize:"12px",color:C.text,fontStyle:"italic"}}>「{hintPhrase.key_sentence}」</div></div>}
       </Sec>
-      <Sec title="切入話術" accent={C.gold}>
-        <Fld label="你怎麼開口（還原實際話語）"><Inp value={r.opening_line} onChange={set("opening_line")} placeholder='例：「這款剛到，很多人問…」' multi/></Fld>
+      <Sec title="接近過程 · 話術" accent={C.gold}>
+        <div style={{background:"#fbf7ee",borderRadius:"8px",padding:"9px 11px",marginBottom:"12px",fontSize:"11px",color:C.sub,lineHeight:"1.6"}}>記錄每次接近時你做了什麼，以及客人如何回應。不需要每個階段都發生，沒有第二次接近就留白即可。</div>
+        <div style={{borderLeft:`3px solid ${C.gold}`,paddingLeft:"10px",marginBottom:"12px"}}>
+          <div style={{fontSize:"12px",fontWeight:700,color:C.gold,marginBottom:"8px"}}>① 第一次接近</div>
+          <Fld label="接近方式"><TagGroup options={["主動問候","商品介紹","穿搭稱讚","詢問需求","提供協助","其他"]} value={r.first_approach||""} onChange={set("first_approach")}/></Fld>
+          <Fld label="實際說了什麼"><Inp value={r.opening_line} onChange={set("opening_line")} placeholder='例：「今天是想找上班穿的款式嗎？」' multi/></Fld>
+          <Fld label="客人第一次反應"><TagGroup options={["積極回應","普通回應","簡短回應","沒有興趣","拒絕交流"]} value={r.first_reaction||""} onChange={set("first_reaction")}/></Fld>
+        </div>
+        <div style={{borderLeft:`3px solid ${C.purple}`,paddingLeft:"10px",marginBottom:"12px"}}>
+          <div style={{fontSize:"12px",fontWeight:700,color:C.purple,marginBottom:"8px"}}>② 第二次接近（選填）</div>
+          <Fld label="再次接近方式"><TagGroup options={["補充商品資訊","提供其他款式","分享穿搭建議","詢問需求","邀請試穿","等待客人主動","其他"]} value={r.second_approach||""} onChange={set("second_approach")}/></Fld>
+          <Fld label="實際說了什麼"><Inp value={r.second_approach_line||""} onChange={set("second_approach_line")} placeholder="第二次接近時實際說的話…" multi/></Fld>
+          <Fld label="客人第二次反應"><TagGroup options={["開始交流","願意聽介紹","願意試穿","仍然冷淡","拒絕交流"]} value={r.second_reaction||""} onChange={set("second_reaction")}/></Fld>
+        </div>
+        <div style={{borderLeft:`3px solid ${C.success}`,paddingLeft:"10px",marginBottom:"10px"}}>
+          <div style={{fontSize:"12px",fontWeight:700,color:C.success,marginBottom:"8px"}}>③ 後續提案（選填）</div>
+          <Fld label="後續做了什麼"><TagGroup options={["補充商品特色","提供搭配建議","推薦替代款","邀請試穿","說明使用場景","連帶推薦"]} value={r.followup_approach||""} onChange={set("followup_approach")}/></Fld>
+          <Fld label="客人後續反應"><TagGroup options={["願意試穿","主動詢問","開始比較","有購買意願","興趣下降","沒有變化"]} value={r.followup_reaction||""} onChange={set("followup_reaction")}/></Fld>
+        </div>
         <Tog label="有成功建立對話" value={r.built_rapport} onChange={set("built_rapport")}/>
       </Sec>
       <Sec title="推薦商品 · 連帶銷售" accent={C.purple}>
@@ -511,11 +532,11 @@ function RecordForm({initial,onSave,onCancel,records,dailyProfile}){
             </div>
             {itemCount>0&&<div style={{fontSize:"10px",color:"#8aba98",marginTop:"3px"}}>共 {itemCount} 件 · 已自動加入今日業績</div>}
           </div>
-          <Fld label="為什麼會買？"><TagGroup options={["商品吸引","我的推薦","場景說服","自我形象認同","價格合適","衝動購買"]} value={r.buy_reason} onChange={set("buy_reason")} color={C.success}/></Fld>
+          <Fld label="為什麼會買？（可複選）"><TagGroup options={["商品設計／款式吸引","價格合適","我的推薦或提案","穿搭／整體造型吸引","使用場景或需求符合","試穿後覺得適合","自我形象認同","衝動購買","其他"]} value={r.buy_reason} onChange={set("buy_reason")} color={C.success} multi/></Fld>
           <Fld label="哪一句話起了關鍵作用"><Inp value={r.key_sentence} onChange={set("key_sentence")} placeholder="還原實際說的話——這是最珍貴的話術" multi/></Fld>
         </>}
         {r.result==="fail"&&<>
-          <Fld label="客人為什麼沒買？"><TagGroup options={["價格","時機不對","沒推好","防備心強","沒找到合適的","需要再想"]} value={r.no_buy_reason} onChange={set("no_buy_reason")} color={C.fail}/></Fld>
+          <Fld label="客人為什麼沒買？（可複選）"><TagGroup options={["價格考量","時機不對／暫時不需要","想再考慮","想比較其他品牌或商品","沒找到合適的商品","尺寸／顏色／庫存問題","對商品興趣不足","尚未建立信任","其他"]} value={r.no_buy_reason} onChange={set("no_buy_reason")} color={C.fail} multi/></Fld>
           <Fld label="如果重來，我會怎麼說"><Inp value={r.redo} onChange={set("redo")} placeholder="下次遇到同類客人，我會這樣說…" multi/></Fld>
         </>}
         <Fld label="備忘 / 心得"><Inp value={r.memo} onChange={set("memo")} placeholder="今天印象最深的一個發現…" multi/></Fld>
@@ -556,7 +577,14 @@ function RecordCard({r,onEdit,onDelete}){
             {r.item_count>=2&&<span style={{fontSize:"10px",padding:"2px 8px",background:"#f5f0fa",borderRadius:"10px",color:C.purple,marginLeft:"5px"}}>連帶 {r.item_count} 件</span>}
           </div>}
           {r.items?.filter(i=>i.name).length>0&&<div style={{marginBottom:"8px"}}>{r.items.filter(i=>i.name).map((item,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",fontSize:"12px",color:C.sub,marginBottom:"2px"}}><span>{item.name}</span>{item.price&&<span style={{color:C.gold}}>¥{Number(item.price).toLocaleString()}</span>}</div>)}</div>}
-          {r.opening_line&&<div style={{borderLeft:`3px solid ${C.gold}`,paddingLeft:"10px",marginBottom:"8px"}}><div style={{fontSize:"10px",color:C.sub,marginBottom:"2px"}}>切入</div><div style={{fontSize:"12.5px",color:C.text,fontStyle:"italic",lineHeight:"1.5"}}>「{r.opening_line}」</div></div>}
+          {(r.opening_line||r.first_approach||r.second_approach_line||r.followup_approach)&&<div style={{borderLeft:`3px solid ${C.gold}`,paddingLeft:"10px",marginBottom:"8px"}}>
+            <div style={{fontSize:"10px",color:C.gold,marginBottom:"4px"}}>接近過程</div>
+            {r.first_approach&&<div style={{fontSize:"11px",color:C.sub}}>第一次：{r.first_approach}{r.first_reaction?` → ${r.first_reaction}`:""}</div>}
+            {r.opening_line&&<div style={{fontSize:"12px",color:C.text,fontStyle:"italic",margin:"2px 0 5px"}}>「{r.opening_line}」</div>}
+            {r.second_approach&&<div style={{fontSize:"11px",color:C.sub}}>第二次：{r.second_approach}{r.second_reaction?` → ${r.second_reaction}`:""}</div>}
+            {r.second_approach_line&&<div style={{fontSize:"12px",color:C.text,fontStyle:"italic",margin:"2px 0 5px"}}>「{r.second_approach_line}」</div>}
+            {r.followup_approach&&<div style={{fontSize:"11px",color:C.sub}}>後續提案：{Array.isArray(r.followup_approach)?r.followup_approach.join("、"):r.followup_approach}{r.followup_reaction?` → ${r.followup_reaction}`:""}</div>}
+          </div>}
           {isS&&r.key_sentence&&<div style={{borderLeft:`3px solid ${C.success}`,paddingLeft:"10px",marginBottom:"8px"}}><div style={{fontSize:"10px",color:C.sub,marginBottom:"2px"}}>關鍵話術</div><div style={{fontSize:"12.5px",color:C.text,fontStyle:"italic",lineHeight:"1.5"}}>「{r.key_sentence}」</div></div>}
           {!isS&&r.redo&&<div style={{borderLeft:`3px solid ${C.fail}`,paddingLeft:"10px",marginBottom:"8px"}}><div style={{fontSize:"10px",color:C.sub,marginBottom:"2px"}}>如果重來</div><div style={{fontSize:"12.5px",color:C.text,lineHeight:"1.5"}}>{r.redo}</div></div>}
           <div style={{display:"flex",gap:"8px",marginTop:"12px",paddingTop:"12px",borderTop:`1px solid ${C.border}`}}>
@@ -1411,7 +1439,7 @@ function AIReview({records}){
   const [scope,setScope]=useState("today");
   const yesterday=new Date(Date.now()-86400000).toISOString().split("T")[0];
   const getRecords=()=>{if(scope==="today")return records.filter(r=>r.date===TODAY);if(scope==="yesterday")return records.filter(r=>r.date===yesterday);const weekAgo=new Date(Date.now()-7*86400000).toISOString().split("T")[0];return records.filter(r=>r.date>=weekAgo);};
-  const buildPrompt=recs=>{if(recs.length===0)return null;const summary=recs.map((r,i)=>{const items=r.items?.filter(i=>i.name).map(i=>i.name).join("、")||r.products||"未記錄";return`【接客${i+1}】${r.period||""} · ${r.language||""} · ${r.customer_type||"?"}型 · 情緒:${r.mood||"未記"} · 推薦:${items} · 切入:"${r.opening_line||"未記"}" · 結果:${r.result==="success"?`成交¥${r.amount}(${r.buy_reason||"未記"})，話術:"${r.key_sentence||""}"`:`未成交(${r.no_buy_reason||"未記"})，複盤:"${r.redo||"未記"}"`}`}).join("\n");return`你是服飾業資深銷售顧問，請用繁體中文複盤以下接客記錄。\n\n${summary}\n\n請按格式回覆（簡短有力）：\n\n**✦ 今日表現亮點**\n（1-2點具體做得好的地方）\n\n**✦ 最需要改善的一件事**\n（最關鍵弱點＋具體改善方法）\n\n**✦ 話術升級建議**\n（1-2句更好的說法）\n\n**✦ 明天的一個小實驗**\n（一個明天可以馬上試的具體行動）`;};
+  const buildPrompt=recs=>{if(recs.length===0)return null;const summary=recs.map((r,i)=>{const items=r.items?.filter(i=>i.name).map(i=>i.name).join("、")||r.products||"未記錄";return`【接客${i+1}】${r.period||""} · ${r.language||""} · ${r.customer_type||"?"}型 · 情緒:${r.mood||"未記"} · 推薦:${items} · 第一次接近:${r.first_approach||"未記"}/${r.first_reaction||"未記"}「${r.opening_line||""}」 · 第二次接近:${r.second_approach||"未記"}/${r.second_reaction||"未記"}「${r.second_approach_line||""}」 · 後續提案:${r.followup_approach||"未記"}/${r.followup_reaction||"未記"} · 結果:${r.result==="success"?`成交¥${r.amount}(${(Array.isArray(r.buy_reason)?r.buy_reason.join("、"):r.buy_reason)||"未記"})，話術:"${r.key_sentence||""}"`:`未成交(${(Array.isArray(r.no_buy_reason)?r.no_buy_reason.join("、"):r.no_buy_reason)||"未記"})，複盤:"${r.redo||"未記"}"`}`}).join("\n");return`你是服飾業資深銷售顧問，請用繁體中文複盤以下接客記錄。\n\n${summary}\n\n請按格式回覆（簡短有力）：\n\n**✦ 今日表現亮點**\n（1-2點具體做得好的地方）\n\n**✦ 最需要改善的一件事**\n（最關鍵弱點＋具體改善方法）\n\n**✦ 話術升級建議**\n（1-2句更好的說法）\n\n**✦ 明天的一個小實驗**\n（一個明天可以馬上試的具體行動）`;};
   const runReview=async()=>{const recs=getRecords();if(recs.length===0){setError("這個範圍內沒有記錄");return;}setLoading(true);setReview(null);setError(null);try{const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:buildPrompt(recs)}]})});const data=await res.json();if(data.error)throw new Error(data.error.message);setReview(data.content?.find(b=>b.type==="text")?.text||"");}catch(e){setError("複盤失敗，請稍後再試");}finally{setLoading(false);}};
   const renderReview=text=>text.split("\n").map((line,i)=>{if(line.startsWith("**✦"))return <div key={i} style={{marginTop:i===0?0:16,marginBottom:"6px"}}><div style={{fontSize:"12px",fontWeight:700,color:C.gold,letterSpacing:"0.05em"}}>{line.replace(/\*\*/g,"")}</div></div>;if(line.trim()==="")return <div key={i} style={{height:"4px"}}/>;return <div key={i} style={{fontSize:"13px",color:C.text,lineHeight:"1.7"}}>{line}</div>;});
   const scopeRecs=getRecords();

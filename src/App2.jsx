@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const C = {
   bg:"#f7f2ec",card:"#ffffff",gold:"#c8a060",goldLight:"#f5ead8",
@@ -80,15 +80,56 @@ const GoalRing=({pct,size=76,stroke=7,color,label,sub})=>{
   );
 };
 
+
+// ── DAILY ENVIRONMENT & STATE ─────────────────────────────────────────────────
+function DailyEnvironment({profile,onChange}){
+  const weatherOptions=[{value:"晴",emoji:"☀️"},{value:"陰天",emoji:"☁️"},{value:"下雨",emoji:"🌧️"}];
+  const stateOptions=[{value:"還好",emoji:"😐"},{value:"很累",emoji:"😴"},{value:"有幹勁",emoji:"⚡"}];
+  const field=(key,value)=>onChange({...profile,[key]:value});
+  return(
+    <Card mb={10}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
+        <div style={{fontSize:"12px",fontWeight:700,color:C.text}}>今日環境與狀態</div>
+        <div style={{fontSize:"10px",color:C.sub}}>每日設定</div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"7px"}}>
+        <span style={{fontSize:"10px",color:C.sub,width:"48px",flexShrink:0}}>天氣</span>
+        <div style={{display:"flex",gap:"6px",flex:1}}>
+          {weatherOptions.map(w=><button key={w.value} onClick={()=>field("weather",w.value)} style={{flex:1,padding:"6px 4px",border:`1px solid ${profile.weather===w.value?C.gold:C.border}`,background:profile.weather===w.value?C.goldLight:"transparent",color:profile.weather===w.value?C.text:C.sub,borderRadius:"8px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit"}}>{w.emoji} {w.value}</button>)}
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px"}}>
+        <span style={{fontSize:"10px",color:C.sub,width:"48px",flexShrink:0}}>氣溫</span>
+        <div style={{display:"flex",alignItems:"center",gap:"5px",flex:1}}>
+          <input type="number" value={profile.lowTemp} onChange={e=>field("lowTemp",e.target.value)} placeholder="最低" style={{width:"100%",minWidth:0,padding:"6px 7px",border:`1px solid ${C.border}`,borderRadius:"7px",fontSize:"11px",background:C.bg,color:C.text,boxSizing:"border-box"}}/>
+          <span style={{fontSize:"11px",color:C.sub}}>～</span>
+          <input type="number" value={profile.highTemp} onChange={e=>field("highTemp",e.target.value)} placeholder="最高" style={{width:"100%",minWidth:0,padding:"6px 7px",border:`1px solid ${C.border}`,borderRadius:"7px",fontSize:"11px",background:C.bg,color:C.text,boxSizing:"border-box"}}/>
+          <span style={{fontSize:"10px",color:C.sub}}>°C</span>
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:"7px"}}>
+        <span style={{fontSize:"10px",color:C.sub,width:"48px",flexShrink:0}}>今日狀態</span>
+        <div style={{display:"flex",gap:"6px",flex:1}}>
+          {stateOptions.map(st=><button key={st.value} onClick={()=>field("status",st.value)} style={{flex:1,padding:"6px 4px",border:`1px solid ${profile.status===st.value?C.purple:C.border}`,background:profile.status===st.value?"#f5f0fa":"transparent",color:profile.status===st.value?C.purple:C.sub,borderRadius:"8px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit"}}>{st.emoji} {st.value}</button>)}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 // ── TODAY TARGETS ─────────────────────────────────────────────────────────────
 function TodayTargets({todayRecs}){
   const [edit,setEdit]=useState(false);
-  const [targets,setTargets]=useState({store:"",personal:"",staffCount:"",hourlyWage:"",shiftHours:""});
+  const [targets,setTargets]=useState({store:"",personal:"",staffCount:"",guestCount:"",dealCount:"",hourlyWage:"",shiftHours:""});
   const [storeActual,setStoreActual]=useState(0);
   const [storeInput,setStoreInput]=useState("");
   const personalTotal=todayRecs.reduce((s,r)=>s+(Number(r.amount)||0),0);
   const pTarget=Number(targets.personal)||0;
   const sTarget=Number(targets.store)||0;
+  const guestTarget=Number(targets.guestCount)||0;
+  const dealTarget=Number(targets.dealCount)||0;
+  const targetATV=dealTarget>0&&pTarget>0?Math.ceil(pTarget/dealTarget):0;
+  const targetCloseRate=guestTarget>0&&dealTarget>0?(dealTarget/guestTarget)*100:null;
   const pPct=pTarget?Math.min(Math.round((personalTotal/pTarget)*100),999):0;
   const sPct=sTarget?Math.min(Math.round((storeActual/sTarget)*100),999):0;
   return(
@@ -126,6 +167,27 @@ function TodayTargets({todayRecs}){
               <input type="number" value={targets.personal} onChange={e=>setTargets(p=>({...p,personal:Number(e.target.value)}))} style={{width:"100%",padding:"8px 10px 8px 24px",border:`1px solid ${C.border}`,borderRadius:"8px",fontFamily:"inherit",fontSize:"13px",color:C.text,background:C.bg,outline:"none",boxSizing:"border-box"}}/>
             </div>
           </div>
+          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+            <div style={{fontSize:"11px",color:C.sub,width:"80px",flexShrink:0}}>目標接客人數</div>
+            <div style={{display:"flex",alignItems:"center",gap:"8px",flex:1}}>
+              <input type="number" min="0" value={targets.guestCount} onChange={e=>setTargets(p=>({...p,guestCount:e.target.value}))} placeholder="例如 30" style={{width:"100px",padding:"8px 10px",border:`1px solid ${C.border}`,borderRadius:"8px",fontFamily:"inherit",fontSize:"13px",color:C.text,background:C.bg,outline:"none",textAlign:"center"}}/>
+              <span style={{fontSize:"11px",color:C.sub}}>人</span>
+            </div>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+            <div style={{fontSize:"11px",color:C.sub,width:"80px",flexShrink:0}}>目標成交客數</div>
+            <div style={{display:"flex",alignItems:"center",gap:"8px",flex:1}}>
+              <input type="number" min="0" value={targets.dealCount} onChange={e=>setTargets(p=>({...p,dealCount:e.target.value}))} placeholder="例如 10" style={{width:"100px",padding:"8px 10px",border:`1px solid ${C.border}`,borderRadius:"8px",fontFamily:"inherit",fontSize:"13px",color:C.text,background:C.bg,outline:"none",textAlign:"center"}}/>
+              <span style={{fontSize:"11px",color:C.sub}}>筆</span>
+            </div>
+          </div>
+          <div style={{background:C.goldLight,borderRadius:"10px",padding:"11px 12px",border:`1px solid ${C.gold}`}}>
+            <div style={{fontSize:"10px",color:C.sub,marginBottom:"4px",letterSpacing:"0.06em"}}>自動試算｜目標平均 ATV</div>
+            <div style={{fontSize:"21px",fontWeight:700,color:C.gold}}>{targetATV>0?numFmt(targetATV):"請先輸入個人目標與成交客數"}</div>
+            <div style={{fontSize:"10px",color:C.sub,marginTop:"4px"}}>{targetATV>0?`${numFmt(pTarget)} ÷ ${dealTarget} 筆成交` : "個人目標金額 ÷ 目標成交客數"}</div>
+            {targetCloseRate!==null&&<div style={{fontSize:"11px",color:C.text,marginTop:"7px",paddingTop:"7px",borderTop:`1px solid ${C.gold}`}}>預估成交率：<b>{targetCloseRate.toFixed(1)}%</b>（{dealTarget} ÷ {guestTarget}）</div>}
+            {guestTarget>0&&dealTarget>guestTarget&&<div style={{fontSize:"10px",color:C.fail,marginTop:"5px"}}>提醒：目標成交客數高於目標接客人數，請確認設定。</div>}
+          </div>
           {sTarget>0&&Number(targets.staffCount)>1&&(
             <button onClick={()=>setTargets(p=>({...p,personal:String(Math.round(sTarget/Number(p.staffCount)))}))} style={{padding:"7px",background:"transparent",border:`1px dashed ${C.gold}`,color:C.gold,borderRadius:"8px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit"}}>← 自動填入（{numFmt(sTarget)} ÷ {targets.staffCount} 人 = {numFmt(Math.round(sTarget/Number(targets.staffCount)))}）</button>
           )}
@@ -148,6 +210,20 @@ function TodayTargets({todayRecs}){
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"12px"}}>
             <GoalRing pct={sPct} color={sPct>=100?C.success:C.gold} label="店舖目標" sub={`${numFmt(storeActual)} / ${sTarget?numFmt(sTarget):"未設定"}`}/>
             <GoalRing pct={pPct} color={pPct>=100?C.success:C.pink} label="個人目標" sub={`${numFmt(personalTotal)} / ${pTarget?numFmt(pTarget):"未設定"}`}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"7px",marginBottom:"12px"}}>
+            <div style={{background:C.bg,borderRadius:"9px",padding:"9px 7px",textAlign:"center"}}>
+              <div style={{fontSize:"10px",color:C.sub,marginBottom:"4px"}}>目標接客</div>
+              <div style={{fontSize:"17px",fontWeight:700,color:C.text}}>{guestTarget>0?`${guestTarget}人`:"—"}</div>
+            </div>
+            <div style={{background:C.bg,borderRadius:"9px",padding:"9px 7px",textAlign:"center"}}>
+              <div style={{fontSize:"10px",color:C.sub,marginBottom:"4px"}}>目標成交</div>
+              <div style={{fontSize:"17px",fontWeight:700,color:C.text}}>{dealTarget>0?`${dealTarget}筆`:"—"}</div>
+            </div>
+            <div style={{background:C.goldLight,borderRadius:"9px",padding:"9px 7px",textAlign:"center",border:`1px solid ${C.gold}`}}>
+              <div style={{fontSize:"10px",color:C.sub,marginBottom:"4px"}}>目標 ATV</div>
+              <div style={{fontSize:"17px",fontWeight:700,color:C.gold}}>{targetATV>0?numFmt(targetATV):"—"}</div>
+            </div>
           </div>
           {todayRecs.filter(r=>r.amount>0).length>0&&(
             <div style={{background:C.bg,borderRadius:"8px",padding:"9px 12px",marginBottom:"10px"}}>
@@ -352,10 +428,10 @@ function WardrobeDB({records}){
 }
 
 // ── RECORD FORM ───────────────────────────────────────────────────────────────
-const emptyRec=()=>({id:Date.now(),date:TODAY,period:"",weather:"",temp:"",flow:"",self_state:"",sell_desire:"",gender:"",age:"",language:"",style:[],customer_type:"",mood:"",companion:"",opening_line:"",built_rapport:false,items:[{name:"",price:""}],products:"",reasons:[],outfit_complete:false,reaction:"",tryon:"",result:"",amount:"",buy_reason:"",key_sentence:"",no_buy_reason:"",redo:"",memo:""});
+const emptyRec=(profile={})=>({id:Date.now(),date:TODAY,period:"",weather:profile.weather?({"晴":"☀️ 晴","陰天":"⛅ 多雲","下雨":"🌧️ 雨"}[profile.weather]||""):"",temp:profile.lowTemp!==""&&profile.highTemp!==""?`${profile.lowTemp}°C～${profile.highTemp}°C`:"",flow:"",self_state:({"還好":"😐 普通","很累":"😴 疲憊","有幹勁":"✨ 飽滿"}[profile.status]||""),sell_desire:"",gender:"",age:"",language:"",style:[],customer_type:"",mood:"",companion:"",opening_line:"",built_rapport:false,items:[{name:"",price:""}],products:"",reasons:[],outfit_complete:false,reaction:"",tryon:"",result:"",amount:"",buy_reason:"",key_sentence:"",no_buy_reason:"",redo:"",memo:""});
 
-function RecordForm({initial,onSave,onCancel,records}){
-  const [r,setR]=useState(initial||emptyRec());
+function RecordForm({initial,onSave,onCancel,records,dailyProfile}){
+  const [r,setR]=useState(()=>initial||emptyRec(dailyProfile));
   const set=k=>v=>setR(p=>({...p,[k]:v}));
   const setItem=(i,k,v)=>setR(p=>{const items=[...p.items];items[i]={...items[i],[k]:v};return{...p,items};});
   const addItem=()=>setR(p=>({...p,items:[...p.items,{name:"",price:""}]}));
@@ -1357,6 +1433,12 @@ function AIReview({records}){
 export default function App(){
   const [tab,setTab]=useState("home");
   const [records,setRecords]=useState(INIT_RECORDS);
+  const [dailyProfile,setDailyProfile]=useState(()=>{
+    try{return JSON.parse(localStorage.getItem(`fashionJournalDailyProfile:${TODAY}`))||{weather:"",lowTemp:"",highTemp:"",status:""};}
+    catch{return {weather:"",lowTemp:"",highTemp:"",status:""};}
+  });
+  useEffect(()=>{try{localStorage.setItem(`fashionJournalDailyProfile:${TODAY}`,JSON.stringify(dailyProfile));}catch{}}
+  ,[dailyProfile]);
   const [view,setView]=useState("list");
   const [editing,setEditing]=useState(null);
   const todayRecs=records.filter(r=>r.date===TODAY);
@@ -1385,6 +1467,7 @@ export default function App(){
       <div style={{padding:"16px"}}>
         {tab==="home"&&<>
           <TodayTargets todayRecs={todayRecs}/>
+          <DailyEnvironment profile={dailyProfile} onChange={setDailyProfile}/>
           <PerformanceCard records={records}/>
           <TodaySummary todayRecs={todayRecs}/>
           <TomorrowTasks/>
@@ -1395,7 +1478,7 @@ export default function App(){
           <button onClick={()=>{setEditing(null);setView("new");}} style={{width:"100%",padding:"13px",background:C.dark,border:"none",color:"#f5ead8",borderRadius:"12px",cursor:"pointer",fontFamily:"inherit",fontSize:"13px",letterSpacing:"0.08em",marginBottom:"12px"}}>＋ 新增接客記錄</button>
           {records.map(r=><RecordCard key={r.id} r={r} onEdit={editRecord} onDelete={deleteRecord}/>)}
         </>}
-        {tab==="records"&&view==="new"&&<RecordForm initial={editing} onSave={save} onCancel={()=>{setView("list");setEditing(null);}} records={records}/>}
+        {tab==="records"&&view==="new"&&<RecordForm initial={editing} onSave={save} onCancel={()=>{setView("list");setEditing(null);}} records={records} dailyProfile={dailyProfile}/>}
         {tab==="phrases"&&<PhrasesBank records={records}/>}
         {tab==="calendar"&&<CalendarView records={records}/>}
         {tab==="ai"&&<AIReview records={records}/>}
