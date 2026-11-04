@@ -1173,6 +1173,9 @@ function JpWordsTextTab(){
   );
 }
 
+// 常見服裝纖維小冊子（內建資料，可離線查看）
+const MATERIAL_GUIDE = [{"name":"棉","jp":"綿（めん）","en":"Cotton","group":"天然纖維・植物性","source":"棉花種子周圍的棉絮（種子毛）。","process":"採收棉鈴 → 分離棉籽與棉纖維 → 清潔、梳理 → 紡成紗線 → 織布或針織。","features":["親膚柔軟","吸濕性佳","透氣、容易染色","耐熱性相對不錯"],"drawbacks":["容易皺","吸水後乾得較慢","可能縮水","反覆摩擦可能起毛球或褪色"],"care":"依洗標清洗；深淺色分開。純棉可能縮水，避免高溫烘乾。","pitch":"棉的觸感自然、親膚又透氣，日常穿著很舒服。"},{"name":"亞麻","jp":"麻（リネン）","en":"Linen / Flax","group":"天然纖維・植物性","source":"亞麻植物的莖部韌皮纖維。","process":"收割亞麻莖 → 浸漚或其他方式分離韌皮纖維 → 梳理 → 紡紗 → 織布。","features":["吸濕、散熱快","透氣乾爽","有自然的節點與肌理","強度佳，濕態強度也不錯"],"drawbacks":["容易產生自然皺褶","初期手感可能較硬","摩擦處可能磨損","深色或特殊整理需留意褪色"],"care":"依洗標溫和洗滌；可接受自然皺感，熨燙時依洗標調整溫度。","pitch":"亞麻的優點是乾爽透氣，天氣熱時穿起來很舒服，也有自然的質感。"},{"name":"苧麻","jp":"ラミー","en":"Ramie","group":"天然纖維・植物性","source":"苧麻植物莖部的韌皮纖維。","process":"剝取莖皮 → 脫膠去除部分天然膠質 → 梳理、紡紗 → 織布。","features":["吸濕散熱","纖維強度高","布面乾爽、有挺度","不易被微生物侵蝕"],"drawbacks":["彈性較低、容易皺","纖維較硬挺，可能有刺感","反覆折疊處可能脆化"],"care":"依洗標清洗，避免長時間折壓；熨燙溫度依成分與洗標。","pitch":"苧麻摸起來比較乾爽挺身，適合喜歡自然麻感、又希望有輪廓的穿搭。"},{"name":"大麻纖維","jp":"ヘンプ","en":"Hemp","group":"天然纖維・植物性","source":"工業大麻植物莖部的韌皮纖維，與麻類同屬莖纖維。","process":"收割莖部 → 浸漚或機械分離韌皮纖維 → 梳理、紡紗 → 織造。","features":["耐用、強度佳","吸濕透氣","纖維具有自然粗獷的肌理","植物生長週期通常較短"],"drawbacks":["未充分加工時手感偏粗硬","彈性低、容易皺","不同加工方式造成觸感差異大"],"care":"依洗標溫和清洗；避免長時間潮濕與強力摩擦。","pitch":"大麻纖維有自然的乾爽肌理，特色是耐穿、透氣，風格比較休閒自然。"},{"name":"羊毛","jp":"ウール","en":"Wool","group":"天然纖維・動物性","source":"主要取自綿羊的毛被。","process":"剪毛 → 洗毛去除油脂與雜質 → 梳毛或精梳 → 紡紗 → 織造或針織。","features":["捲曲結構能保留空氣、保暖","吸濕性佳，穿著時較不易有濕冷感","有彈性與回復性","部分羊毛具有天然抗異味特性"],"drawbacks":["遇熱、摩擦、濕氣與攪動可能氈化縮水","部分人會覺得刺癢","可能遭蟲蛀","保養通常比一般棉料講究"],"care":"優先依洗標；標示可水洗才使用羊毛專用洗劑與低摩擦方式，平放晾乾。","pitch":"羊毛能保留溫暖空氣，同時吸收濕氣，適合需要保暖又不想太悶的季節。"},{"name":"美麗諾羊毛","jp":"メリノウール","en":"Merino Wool","group":"天然纖維・動物性","source":"美麗諾羊品種的羊毛，特色是纖維通常較細。","process":"剪毛、洗毛、梳理與紡紗，基本製程與一般羊毛相同；依纖維細度分級。","features":["纖維細，通常較柔軟","保暖且能吸濕","透氣、溫度調節感佳","適合貼身針織或機能衣"],"drawbacks":["仍可能因摩擦與洗滌方式不當而起毛球或氈化","細羊毛價格通常較高","部分人仍可能感到刺激"],"care":"依洗標；避免高溫、強力搓揉與吊掛變形。","pitch":"美麗諾羊毛的纖維比較細，觸感通常比一般粗羊毛柔和，適合做貼身或輕薄保暖單品。"},{"name":"喀什米爾羊毛","jp":"カシミヤ","en":"Cashmere","group":"天然纖維・動物性","source":"喀什米爾山羊身上細軟的底層絨毛。","process":"換毛季梳取或採集底絨 → 分離粗毛與細絨 → 清洗、梳理 → 紡成細紗。","features":["非常柔軟、細緻","輕盈但保暖","垂墜感與細膩光澤佳","適合製作高級針織品"],"drawbacks":["纖維細，摩擦處容易起毛球","容易被尖銳物勾到","需細心保養，價格較高","過度洗滌可能影響蓬鬆與手感"],"care":"依洗標；建議減少摩擦，平放收納與晾乾，避免長時間吊掛。","pitch":"喀什米爾的特色是輕盈又柔軟，保暖感很好，穿起來不會有厚重負擔。"},{"name":"馬海毛","jp":"モヘヤ","en":"Mohair","group":"天然纖維・動物性","source":"安哥拉山羊的毛。注意：不是安哥拉兔毛。","process":"剪取山羊毛 → 洗毛、分級 → 梳理紡紗，常與羊毛或尼龍混紡改善耐用度。","features":["纖維有光澤","蓬鬆、輕盈","有一定強度與耐磨性","毛感明顯，視覺效果突出"],"drawbacks":["毛感可能掉毛或刺激敏感肌","表面容易勾紗","部分粗細等級觸感較刺","清洗需謹慎"],"care":"依洗標；避免摩擦與勾扯，摺疊收納較穩妥。","pitch":"馬海毛有漂亮的光澤和蓬鬆毛感，穿起來很有層次，適合做造型重點。"},{"name":"羊駝毛","jp":"アルパカ","en":"Alpaca","group":"天然纖維・動物性","source":"羊駝身上的毛纖維。","process":"剪毛 → 分級、洗淨 → 梳理與紡紗 → 織造或針織。","features":["輕盈、保暖","纖維表面較平滑，光澤柔和","部分品種纖維細軟","天然色系多"],"drawbacks":["不同等級觸感差異大","可能起毛球或勾紗","部分較粗纖維會有刺感","通常需要較溫和保養"],"care":"依洗標；避免高溫與大力搓揉，針織品平放晾乾。","pitch":"羊駝毛的特色是輕盈保暖，毛感和光澤都很柔和，適合做有蓬鬆感的針織。"},{"name":"安哥拉兔毛","jp":"アンゴラ","en":"Angora Rabbit Hair","group":"天然纖維・動物性","source":"安哥拉兔的細軟兔毛。","process":"梳取或剪取兔毛 → 清理、分級 → 常與羊毛或合成纖維混紡後紡紗。","features":["非常輕柔、蓬鬆","保暖性高","毛感細緻、外觀柔霧"],"drawbacks":["容易掉毛","纖維短，通常需混紡增加強度","容易勾紗、摩擦起毛","保養較費心"],"care":"依洗標；避免摩擦與頻繁清洗，收納時避免與尖銳物品接觸。","pitch":"安哥拉兔毛非常蓬鬆輕柔，視覺上有柔霧毛感，適合喜歡軟綿綿質地的人。"},{"name":"蠶絲","jp":"シルク","en":"Silk","group":"天然纖維・動物性","source":"家蠶吐出的絲蛋白長纖維，形成繭絲。","process":"收繭 → 煮繭軟化絲膠 → 抽取、合併繭絲 → 合撚成絲線 → 織造。","features":["觸感滑順、光澤細緻","吸濕性佳","輕盈且有良好垂墜感","接觸皮膚時感覺柔和"],"drawbacks":["日光與汗液可能造成褪色或劣化","濕態時需避免強力摩擦","容易勾絲","部分品項需專業乾洗"],"care":"依洗標；避免曝曬、漂白與粗暴擰乾，香水或汗液盡量不要長時間停留。","pitch":"蠶絲有自然細緻的光澤，質地滑順又輕盈，穿起來很有垂墜感。"},{"name":"駱駝毛","jp":"キャメル","en":"Camel Hair","group":"天然纖維・動物性","source":"駱駝身上的底層細毛，常在換毛季採集。","process":"收集換毛纖維 → 分離粗毛與細毛 → 清洗、梳理 → 紡紗。","features":["輕盈保暖","觸感柔和（依纖維等級而異）","常見自然駝色","適合大衣與保暖針織"],"drawbacks":["價格可能較高","纖維細度不同，可能有刺感","容易受到摩擦與蟲蛀影響"],"care":"依洗標；大衣通常交由專業清潔，針織品避免吊掛變形。","pitch":"駱駝毛的保暖感很好，重量卻相對輕，經典駝色也很容易搭配。"},{"name":"牦牛絨","jp":"ヤク","en":"Yak Down","group":"天然纖維・動物性","source":"牦牛身上的細軟底絨。","process":"梳取或收集換毛底絨 → 分離粗毛 → 清洗、梳理 → 紡紗。","features":["柔軟、輕盈","保暖性佳","天然深色纖維常見","適合高級針織與混紡"],"drawbacks":["原料取得與分級較費工","價格通常較高","不同品質觸感差異明顯","需避免摩擦與不當洗滌"],"care":"依洗標；針織品平放晾乾，避免高溫與大力搓揉。","pitch":"牦牛絨兼具輕盈與保暖，天然色澤比較沉穩，適合喜歡低調質感的人。"},{"name":"嫘縈／人造絲","jp":"レーヨン","en":"Rayon / Viscose","group":"再生纖維・纖維素系","source":"木材紙漿或其他植物來源的纖維素；屬再生纖維，不是直接取出的天然纖維。","process":"將纖維素溶解或轉化成可紡液 → 經噴絲孔形成纖維 → 凝固、再生 → 洗淨與後處理。","features":["手感柔軟、垂墜感佳","吸濕性好","可呈現類似絲質的光澤","穿著觸感通常涼爽"],"drawbacks":["部分種類濕強度較低","容易皺、可能縮水或變形","洗滌方式需特別留意","不耐長時間潮濕與粗暴摩擦"],"care":"嚴格依洗標；不可自行假設可水洗，濕態避免拉扯。","pitch":"嫘縈的垂墜感很好，穿起來柔軟涼爽，能做出很漂亮的流動線條。"},{"name":"莫代爾","jp":"モダール","en":"Modal","group":"再生纖維・纖維素系","source":"以木材纖維素為原料的再生纖維素纖維，常見原料為山毛櫸等木材。","process":"木材製漿取得纖維素 → 以再生纖維素製程溶解紡絲 → 凝固再生 → 後整理。","features":["柔軟滑順","吸濕性佳","垂墜感好","適合貼身衣物與柔軟針織"],"drawbacks":["品質與耐洗性依製程和混紡而異","可能起毛球或變形","仍需依洗標照護"],"care":"依洗標使用溫和洗程；避免高溫烘乾與過度摩擦。","pitch":"莫代爾摸起來很滑順柔軟，吸濕性也不錯，適合喜歡親膚觸感的人。"},{"name":"天絲™萊賽爾","jp":"リヨセル（テンセル™）","en":"Lyocell (TENCEL™)","group":"再生纖維・纖維素系","source":"以木材纖維素製成的再生纖維；TENCEL™ 是品牌商標，Lyocell 是纖維類別。","process":"木材製漿取得纖維素 → 以溶劑直接溶解 → 濕式紡絲凝固成纖維 → 溶劑回收與後整理。","features":["柔軟、垂墜感佳","吸濕性佳","表面平滑、穿著舒適","常見製程有溶劑回收系統"],"drawbacks":["濕態摩擦可能造成表面起毛或白化（fibrillation）","不同整理與混紡會影響手感","仍可能皺或需要細心洗護"],"care":"依洗標；避免粗糙摩擦，反面洗滌或使用洗衣袋可降低磨損。","pitch":"萊賽爾的觸感滑順、垂墜自然，穿起來很舒服，也常用在柔軟有質感的單品。"},{"name":"銅氨纖維","jp":"キュプラ","en":"Cupro","group":"再生纖維・纖維素系","source":"棉籽周圍短絨（棉籽絨／棉短絨）中的纖維素。","process":"取得棉短絨 → 以銅氨溶液溶解纖維素 → 濕式紡絲 → 凝固、洗淨與後處理。","features":["滑順細緻","吸濕、透氣","靜電感通常較低","常用於高級裡布與飄逸服裝"],"drawbacks":["濕態強度與耐磨表現需留意","容易勾絲或皺","保養需依洗標"],"care":"依洗標；避免擰扭與強力摩擦，精緻單品可交由專業清潔。","pitch":"銅氨纖維很滑順，常用在高級裡布，穿脫時也有很舒服的滑順感。"},{"name":"醋酸纖維","jp":"アセテート","en":"Acetate","group":"半合成纖維・纖維素系","source":"植物纖維素經醋酸化學改質製成，屬纖維素衍生纖維。","process":"纖維素原料 → 醋酸化形成醋酸纖維素 → 溶液紡絲 → 溶劑揮發形成纖維。","features":["光澤接近絲質","垂墜感佳","手感滑順","不易像棉麻一樣大量吸水"],"drawbacks":["耐熱性較低，熨燙需小心","部分溶劑可能損傷纖維","強度與耐磨性依種類而異"],"care":"依洗標；遠離高溫，避免自行使用含丙酮等溶劑的去漬方式。","pitch":"醋酸纖維有漂亮的絲質光澤和垂墜感，適合想要優雅線條又不一定選真絲的客人。"},{"name":"聚酯纖維","jp":"ポリエステル","en":"Polyester","group":"合成纖維","source":"主要由石化原料製成的聚合物；也有回收來源的聚酯。","process":"單體聚合成聚酯 → 熔融 → 經噴絲孔紡絲 → 拉伸定型 → 加工成紗線。","features":["不易皺、尺寸穩定","快乾、耐磨性通常不錯","容易保養","可製成多種手感與機能布料"],"drawbacks":["吸濕性較低，悶熱感依織法而異","容易產生靜電","可能吸附油污與異味","洗滌可能釋出微纖維"],"care":"依洗標；避免高溫熨燙，洗滌時可減少不必要的高頻率清洗。","pitch":"聚酯纖維的優點是好整理、不容易皺又快乾，日常穿著和旅行都很方便。"},{"name":"尼龍","jp":"ナイロン","en":"Nylon / Polyamide","group":"合成纖維","source":"由聚醯胺聚合物製成，常見原料來自石化，也有再生尼龍。","process":"聚合形成聚醯胺 → 熔融紡絲 → 拉伸定向 → 製成長絲或短纖。","features":["強度高、耐磨","輕量","彈性與回復性通常不錯","適合外套、機能服與包袋"],"drawbacks":["耐熱性有限","容易產生靜電","長期日曬可能劣化","依組織可能有悶熱或摩擦聲"],"care":"依洗標；避免高溫熨燙與長時間曝曬。","pitch":"尼龍很輕又耐磨，適合需要活動度、耐用度或輕量感的外套和機能單品。"},{"name":"壓克力纖維","jp":"アクリル","en":"Acrylic","group":"合成纖維","source":"以丙烯腈為主要原料製成的合成纖維。","process":"聚合形成聚合物 → 溶液紡絲 → 凝固與拉伸 → 加工成短纖或長絲。","features":["輕盈、蓬鬆","保暖感佳","可模仿羊毛外觀與手感","容易染出鮮明色彩"],"drawbacks":["容易起毛球","可能產生靜電","吸濕性較低，容易悶熱","耐熱性較低，需避免高溫"],"care":"依洗標；避免高溫烘乾與熨燙，減少摩擦可降低起球。","pitch":"壓克力纖維輕盈蓬鬆，能做出類似羊毛的毛感，而且通常比較容易照顧。"},{"name":"彈性纖維／聚氨酯","jp":"ポリウレタン／スパンデックス","en":"Elastane / Spandex","group":"合成纖維","source":"以聚氨酯為基礎的高彈性合成纖維，常以少量混紡增加伸縮性。","process":"製成聚氨酯聚合物 → 溶液紡絲等方式形成彈性長絲 → 拉伸加工 → 與其他纖維混紡。","features":["伸縮性非常好","回復性佳","少量添加即可改善活動舒適度","常見於牛仔褲、貼身衣物與運動服"],"drawbacks":["長期高溫、氯水、汗液與日曬可能加速彈性衰退","比例過高可能較貼身","不適合高溫熨燙或烘乾"],"care":"依洗標；避免高溫烘乾、熨燙與長時間浸泡含氯水。","pitch":"這件有加入彈性纖維，活動時比較自在，坐下或抬手也不容易有緊繃感。"},{"name":"再生聚酯","jp":"リサイクルポリエステル","en":"Recycled Polyester","group":"合成纖維","source":"回收 PET 瓶或聚酯紡織品等來源，依供應鏈而異。","process":"回收材料分類清潔 → 破碎與熔融再製，或化學解聚再聚合 → 紡絲製成纖維。","features":["保留聚酯常見的快乾與耐皺特性","可利用回收原料","可用於服裝、填充物與機能布料"],"drawbacks":["回收來源與品質追溯需看認證及供應鏈","仍可能釋出微纖維","不代表產品整體一定低環境衝擊"],"care":"依洗標；可減少不必要清洗與高磨擦洗程。","pitch":"這款使用再生聚酯纖維，把回收材料再製成布料，同時保有聚酯快乾、好整理的特性。"},{"name":"黃麻","jp":"ジュート","en":"Jute","group":"天然纖維・植物性","source":"黃麻植物莖部的韌皮纖維。","process":"收割莖部 → 浸漚分離纖維 → 洗淨、乾燥 → 紡紗或製成粗布。","features":["植物來源","纖維粗、挺度明顯","透氣且具天然外觀","常用於袋材、家飾與混紡"],"drawbacks":["觸感較粗，不適合多數貼身服裝","吸水後乾燥較慢","耐洗性與柔軟度有限"],"care":"避免長時間浸水；依產品洗標清潔，通常不適合頻繁水洗。","pitch":"黃麻的質地比較粗獷，常用在有自然感的配件或家居用品，不是典型貼身衣料。"}];
+
 // 材質資料
 function MaterialsTextTab(){
   const [items,setItems]=useState([]);
@@ -1335,8 +1338,58 @@ function JpWordsTab(){
   return <div><ModeTabs mode={mode} onChange={setMode}/>{mode==="image"?<JpWordsImageTab/>:<JpWordsTextTab/>}</div>;
 }
 function MaterialsTab(){
-  const [mode,setMode]=useState("image");
-  return <div><ModeTabs mode={mode} onChange={setMode}/>{mode==="image"?<MaterialsImageTab/>:<MaterialsTextTab/>}</div>;
+  const [mode,setMode]=useState("guide");
+  const [query,setQuery]=useState("");
+  const [group,setGroup]=useState("全部");
+  const [opened,setOpened]=useState("棉");
+  const groups=["全部","天然纖維・植物性","天然纖維・動物性","再生纖維・纖維素系","半合成纖維・纖維素系","合成纖維"];
+  const filtered=MATERIAL_GUIDE.filter(m=>(group==="全部"||m.group===group)&&
+    [m.name,m.jp,m.en,m.group,m.source,m.features.join(" "),m.drawbacks.join(" ")].join(" ").toLowerCase().includes(query.trim().toLowerCase()));
+  return <div>
+    <div style={{display:"flex",gap:"6px",marginBottom:"10px"}}>
+      {[["guide","📖 材質小冊子"],["image","圖片分析"],["text","文字整理"]].map(([value,label])=>(
+        <button key={value} onClick={()=>setMode(value)} style={{flex:1,padding:"8px 4px",border:`1px solid ${mode===value?C.gold:C.border}`,background:mode===value?C.goldLight:"transparent",color:mode===value?C.dark:C.sub,borderRadius:"8px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit"}}>{label}</button>
+      ))}
+    </div>
+    {mode==="guide"?<div>
+      <Card accent={sage}>
+        <SectionLabel label="服裝材質速查手冊" accent={sage}/>
+        <div style={{fontSize:"11px",color:C.sub,lineHeight:1.7,marginBottom:"10px"}}>從纖維來源、製作方式到特性、缺點與保養，整理成隨時可查的口袋小冊子。這裡收錄常見服裝纖維；實際商品仍以成分標籤及洗標為準。</div>
+        <Inp value={query} onChange={setQuery} placeholder="搜尋材質：羊毛、透氣、容易皺、ウール…"/>
+        <div style={{display:"flex",gap:"6px",overflowX:"auto",padding:"9px 0 2px"}}>
+          {groups.map(g=><button key={g} onClick={()=>setGroup(g)} style={{whiteSpace:"nowrap",padding:"6px 9px",border:`1px solid ${group===g?sage:C.border}`,background:group===g?"#edf4ef":"white",color:group===g?sage:C.sub,borderRadius:"18px",fontSize:"10px",cursor:"pointer",fontFamily:"inherit"}}>{g}</button>)}
+        </div>
+        <div style={{fontSize:"10px",color:C.sub,marginTop:"5px"}}>共 {filtered.length} 種材質</div>
+      </Card>
+      {filtered.map(m=><div key={m.name} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:"12px",marginBottom:"8px",overflow:"hidden"}}>
+        <button onClick={()=>setOpened(opened===m.name?"":m.name)} style={{width:"100%",padding:"12px 13px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"10px",border:0,background:"transparent",textAlign:"left",cursor:"pointer",fontFamily:"inherit"}}>
+          <div style={{minWidth:0}}>
+            <div style={{fontSize:"15px",fontWeight:700,color:C.dark}}>{m.name}<span style={{fontSize:"11px",fontWeight:400,color:C.sub,marginLeft:"7px"}}>{m.jp}</span></div>
+            <div style={{fontSize:"10px",color:C.sub,marginTop:"3px"}}>{m.en} · {m.group}</div>
+          </div>
+          <span style={{color:C.sub,fontSize:"16px"}}>{opened===m.name?"−":"＋"}</span>
+        </button>
+        {opened===m.name&&<div style={{padding:"0 13px 14px",borderTop:`1px solid ${C.border}`}}>
+          {[
+            ["纖維來源",m.source],
+            ["怎麼製作",m.process],
+            ["主要特性",m.features],
+            ["缺點／注意事項",m.drawbacks],
+            ["保養方式",m.care]
+          ].map(([label,value])=><div key={label} style={{marginTop:"11px"}}>
+            <div style={{fontSize:"10px",fontWeight:700,color:sage,letterSpacing:"0.04em",marginBottom:"5px"}}>{label}</div>
+            {Array.isArray(value)?<ul style={{margin:"0",paddingLeft:"18px",color:C.text,fontSize:"12px",lineHeight:1.8}}>{value.map((v,i)=><li key={i}>{v}</li>)}</ul>:<div style={{fontSize:"12px",color:C.text,lineHeight:1.8}}>{value}</div>}
+          </div>)}
+          <div style={{marginTop:"12px",background:"#f0faf4",borderRadius:"8px",padding:"10px 11px",borderLeft:`3px solid ${sage}`}}>
+            <div style={{fontSize:"10px",fontWeight:700,color:sage,marginBottom:"4px"}}>💬 接客時可以這樣介紹</div>
+            <div style={{fontSize:"12px",color:C.text,lineHeight:1.7}}>「{m.pitch}」</div>
+          </div>
+        </div>}
+      </div>)}
+      {filtered.length===0&&<div style={{textAlign:"center",padding:"28px",fontSize:"12px",color:C.sub}}>找不到符合的材質，試試其他關鍵字。</div>}
+      <div style={{fontSize:"10px",color:C.sub,lineHeight:1.7,padding:"6px 3px"}}>小提醒：同一種纖維會因纖維細度、紗線、織法、染整與混紡比例而有不同手感及性能。介紹商品時請以實際成分與洗標為準。</div>
+    </div>:mode==="image"?<MaterialsImageTab/>:<MaterialsTextTab/>}
+  </div>;
 }
 function StylingTab(){
   const [mode,setMode]=useState("image");
